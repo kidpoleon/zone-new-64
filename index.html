@@ -355,6 +355,20 @@
       gap: 10px;
     }
 
+    .loading {
+      opacity: 0.6;
+      pointer-events: none;
+    }
+
+    .success-flash {
+      animation: flash 0.3s ease;
+    }
+
+    @keyframes flash {
+      0%, 100% { background: var(--panel); }
+      50% { background: rgba(22, 136, 184, 0.2); }
+    }
+
     .footer {
       margin-top: 20px;
       padding: 20px;
@@ -456,11 +470,14 @@
           <div class="section">
             <div class="section-title">
               <h2>Input</h2>
+              <div class="tool-row">
+                <button id="pasteBtn" type="button" title="Paste from clipboard">Paste</button>
+              </div>
             </div>
-            <textarea id="input" spellcheck="false" placeholder="Type or paste here"></textarea>
+            <textarea id="input" spellcheck="false" placeholder="Type or paste here" aria-label="Input text area"></textarea>
             <div class="toolbar">
-              <button id="runBtn" class="primary" type="button">Process</button>
-              <button id="clearBtn" type="button">Clear</button>
+              <button id="runBtn" class="primary" type="button" aria-label="Process input">Process</button>
+              <button id="clearBtn" type="button" aria-label="Clear input and output">Clear</button>
             </div>
           </div>
         </section>
@@ -470,11 +487,8 @@
           <div class="section">
             <div class="section-title">
               <h2>Output</h2>
-              <div class="tool-row">
-                <button id="copyBtn" type="button">Copy</button>
-              </div>
             </div>
-            <pre id="output">Ready.</pre>
+            <pre id="output" aria-label="Output text area">Ready.</pre>
           </div>
 
           <div class="section" id="urlSection" style="display: none;">
@@ -510,7 +524,7 @@
     const output = document.getElementById("output");
     const runBtn = document.getElementById("runBtn");
     const clearBtn = document.getElementById("clearBtn");
-    const copyBtn = document.getElementById("copyBtn");
+    const pasteBtn = document.getElementById("pasteBtn");
     const modeEncode = document.getElementById("modeEncode");
     const modeDecode = document.getElementById("modeDecode");
     const hamburgerBtn = document.getElementById("hamburgerBtn");
@@ -535,6 +549,15 @@
     function setStatus(kind, text) {
       statusText.textContent = text;
       pulse.className = "pulse" + (kind ? " " + kind : "");
+      
+      // Auto-clear status after 3 seconds for success messages
+      if (kind === "good") {
+        setTimeout(() => {
+          if (statusText.textContent === text) {
+            setStatus("", "Ready.");
+          }
+        }, 3000);
+      }
     }
 
     function checkForUrls(text) {
@@ -697,20 +720,30 @@
         output.textContent = "Nothing to encode.";
         lastOutputText = "";
         resetDerived();
-        setStatus("bad", "Input is empty.");
+        setStatus("bad", "Input is empty. Please enter text to encode.");
+        input.focus();
         return;
       }
 
-      const lines = bulkMode.checked
-        ? value.split(/\r?\n/).filter((line) => line.trim() !== "")
-        : [value];
+      try {
+        const lines = bulkMode.checked
+          ? value.split(/\r?\n/).filter((line) => line.trim() !== "")
+          : [value];
 
-      const encodedLines = lines.map((line) => encodeString(line).encoded);
-      lastOutputText = encodedLines.join("\n");
-      output.textContent = lastOutputText;
-      resetDerived();
-      checkForUrls(lastOutputText);
-      setStatus("good", `${encodedLines.length} item${encodedLines.length === 1 ? "" : "s"} encoded.`);
+        const encodedLines = lines.map((line) => encodeString(line).encoded);
+        lastOutputText = encodedLines.join("\n");
+        output.textContent = lastOutputText;
+        resetDerived();
+        checkForUrls(lastOutputText);
+        output.classList.add("success-flash");
+        setTimeout(() => output.classList.remove("success-flash"), 300);
+        setStatus("good", `${encodedLines.length} item${encodedLines.length === 1 ? "" : "s"} encoded successfully.`);
+      } catch (error) {
+        output.textContent = "Encoding error: " + error.message;
+        lastOutputText = "";
+        resetDerived();
+        setStatus("bad", "Encoding failed. Please check your input.");
+      }
     }
 
     function processDecode() {
@@ -719,45 +752,61 @@
         output.textContent = "Nothing to decode.";
         lastOutputText = "";
         resetDerived();
-        setStatus("bad", "Input is empty.");
+        setStatus("bad", "Input is empty. Please enter Base64 text to decode.");
+        input.focus();
         return;
       }
 
-      if (dirtyScan.checked && !bulkMode.checked) {
-        const decodedTexts = collectCandidates(value);
+      try {
+        if (dirtyScan.checked && !bulkMode.checked) {
+          const decodedTexts = collectCandidates(value);
+          lastDecodedTexts = decodedTexts;
+          updateDerivedUrls();
+          lastOutputText = decodedTexts.join("\n\n");
+          output.textContent = lastOutputText || "No valid Base64 found.";
+          checkForUrls(lastOutputText);
+          if (decodedTexts.length > 0) {
+            output.classList.add("success-flash");
+            setTimeout(() => output.classList.remove("success-flash"), 300);
+          }
+          setStatus(decodedTexts.length ? "good" : "bad", decodedTexts.length ? `${decodedTexts.length} candidate${decodedTexts.length === 1 ? "" : "s"} decoded successfully.` : "No valid Base64 found. Try adjusting settings.");
+          return;
+        }
+
+        const lines = bulkMode.checked
+          ? value.split(/\r?\n/).filter((line) => line.trim() !== "")
+          : [value];
+
+        const outputLines = [];
+        const decodedTexts = [];
+
+        for (let i = 0; i < lines.length; i += 1) {
+          const line = lines[i];
+          const result = tryDecodeString(line, { minLength: bulkMode.checked ? 8 : 4 });
+          if (result.ok) {
+            outputLines.push(result.text);
+            decodedTexts.push(result.text);
+          } else {
+            outputLines.push(`[line ${i + 1}] ${result.reason}`);
+          }
+        }
+
         lastDecodedTexts = decodedTexts;
         updateDerivedUrls();
-        lastOutputText = decodedTexts.join("\n\n");
-        output.textContent = lastOutputText || "No valid Base64 found.";
+        lastOutputText = outputLines.join("\n");
+        output.textContent = lastOutputText;
         checkForUrls(lastOutputText);
-        setStatus(decodedTexts.length ? "good" : "bad", decodedTexts.length ? `${decodedTexts.length} candidate${decodedTexts.length === 1 ? "" : "s"} decoded.` : "No valid Base64 found.");
-        return;
-      }
-
-      const lines = bulkMode.checked
-        ? value.split(/\r?\n/).filter((line) => line.trim() !== "")
-        : [value];
-
-      const outputLines = [];
-      const decodedTexts = [];
-
-      for (let i = 0; i < lines.length; i += 1) {
-        const line = lines[i];
-        const result = tryDecodeString(line, { minLength: bulkMode.checked ? 8 : 4 });
-        if (result.ok) {
-          outputLines.push(result.text);
-          decodedTexts.push(result.text);
-        } else {
-          outputLines.push(`[line ${i + 1}] ${result.reason}`);
+        if (decodedTexts.length > 0) {
+          output.classList.add("success-flash");
+          setTimeout(() => output.classList.remove("success-flash"), 300);
         }
+        setStatus(decodedTexts.length ? "good" : "bad", `${decodedTexts.length} of ${lines.length} item${lines.length === 1 ? "" : "s"} decoded successfully.`);
+      } catch (error) {
+        output.textContent = "Decoding error: " + error.message;
+        lastOutputText = "";
+        resetDerived();
+        setStatus("bad", "Decoding failed. Please check your Base64 input.");
       }
-
-      lastDecodedTexts = decodedTexts;
-      updateDerivedUrls();
-      lastOutputText = outputLines.join("\n");
-      output.textContent = lastOutputText;
-      checkForUrls(lastOutputText);
-      setStatus(decodedTexts.length ? "good" : "bad", `${decodedTexts.length} of ${lines.length} item${lines.length === 1 ? "" : "s"} decoded.`);
     }
 
     function run() {
@@ -789,21 +838,19 @@
       lastOutputText = "";
       resetDerived();
       urlSection.style.display = "none";
-      setStatus("", "Ready.");
+      setStatus("", "Cleared. Ready.");
+      input.focus();
     });
 
-    copyBtn.addEventListener("click", () => {
-      const value = output.textContent === "Ready." ? lastOutputText : output.textContent;
-      if (!value) {
-        setStatus("bad", "Nothing to copy.");
-        return;
+    pasteBtn.addEventListener("click", async () => {
+      try {
+        const text = await navigator.clipboard.readText();
+        input.value = text;
+        setStatus("good", "Pasted from clipboard.");
+        input.focus();
+      } catch (error) {
+        setStatus("bad", "Failed to paste. Please use Ctrl+V.");
       }
-
-      navigator.clipboard.writeText(value).then(() => {
-        setStatus("good", "Copied.");
-      }).catch(() => {
-        setStatus("bad", "Copy failed.");
-      });
     });
 
     copyUrlBtn.addEventListener("click", () => {
@@ -814,9 +861,9 @@
       }
 
       navigator.clipboard.writeText(url).then(() => {
-        setStatus("good", "URL copied.");
+        setStatus("good", "URL copied to clipboard.");
       }).catch(() => {
-        setStatus("bad", "Copy failed.");
+        setStatus("bad", "Copy failed. Please try again.");
       });
     });
 
@@ -827,13 +874,27 @@
         return;
       }
 
-      window.open(url, "_blank");
+      try {
+        window.open(url, "_blank", "noopener,noreferrer");
+        setStatus("good", "Opening URL in new tab.");
+      } catch (error) {
+        setStatus("bad", "Failed to open URL.");
+      }
     });
 
 
     input.addEventListener("keydown", (event) => {
       if ((event.ctrlKey || event.metaKey) && event.key === "Enter") {
+        event.preventDefault();
         run();
+      }
+    });
+
+    // Add keyboard shortcut for clear (Ctrl+L or Cmd+L)
+    input.addEventListener("keydown", (event) => {
+      if ((event.ctrlKey || event.metaKey) && event.key === "l") {
+        event.preventDefault();
+        clearBtn.click();
       }
     });
 

@@ -6,6 +6,7 @@
   <title>zone-new-64</title>
   <link rel="preconnect" href="https://rsms.me/" />
   <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
   <style>
     :root {
       color-scheme: dark;
@@ -369,6 +370,63 @@
       gap: 10px;
     }
 
+    .url-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .url-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      background: rgba(219, 247, 249, 0.04);
+      border: 1px solid rgba(219, 247, 249, 0.08);
+      border-radius: 8px;
+      transition: background 140ms ease, border-color 140ms ease;
+    }
+
+    .url-item:hover {
+      background: rgba(219, 247, 249, 0.08);
+      border-color: rgba(219, 247, 249, 0.12);
+    }
+
+    .url-text {
+      flex: 1;
+      color: var(--text);
+      font: 500 13px/1.65 var(--mono);
+      word-break: break-all;
+      min-width: 0;
+    }
+
+    .url-item-actions {
+      display: flex;
+      gap: 6px;
+      opacity: 0;
+      transition: opacity 140ms ease;
+    }
+
+    .url-item:hover .url-item-actions {
+      opacity: 1;
+    }
+
+    .url-item-actions button {
+      padding: 6px 10px;
+      font-size: 13px;
+      min-width: auto;
+    }
+
+    .url-item-actions button i {
+      margin-right: 4px;
+    }
+
+    @media (hover: none) {
+      .url-item-actions {
+        opacity: 1;
+      }
+    }
+
     .loading {
       opacity: 0.6;
       pointer-events: none;
@@ -521,15 +579,9 @@
 
           <div class="section" id="urlSection" style="display: none;">
             <div class="section-title">
-              <h2>Detected URL</h2>
+              <h2>Detected URLs</h2>
             </div>
-            <div class="url-display">
-              <span id="detectedUrl"></span>
-              <div class="url-actions">
-                <button id="copyUrlBtn" type="button">Copy</button>
-                <button id="openUrlBtn" type="button">Open in New Tab</button>
-              </div>
-            </div>
+            <div id="urlList" class="url-list"></div>
           </div>
         </aside>
       </div>
@@ -558,9 +610,7 @@
     const stripWhitespace = document.getElementById("stripWhitespace");
     const repairPadding = document.getElementById("repairPadding");
     const urlSection = document.getElementById("urlSection");
-    const detectedUrl = document.getElementById("detectedUrl");
-    const copyUrlBtn = document.getElementById("copyUrlBtn");
-    const openUrlBtn = document.getElementById("openUrlBtn");
+    const urlList = document.getElementById("urlList");
 
     let currentMode = "encode";
     let lastOutputText = "";
@@ -569,13 +619,63 @@
 
     function checkForUrls(text) {
       const urlRegex = /https?:\/\/[^\s<>"'`]+/gi;
-      const match = text.match(urlRegex);
-      if (match && match.length > 0) {
-        const url = match[0].replace(/[),.;!?]+$/g, "");
-        detectedUrl.textContent = url;
-        urlSection.style.display = "block";
+      const matches = text.match(urlRegex);
+      
+      if (matches && matches.length > 0) {
+        // Remove duplicates and clean URLs
+        const uniqueUrls = [...new Set(matches)].map(url => url.replace(/[),.;!?]+$/g, ""));
+        lastUrlList = uniqueUrls;
+        
+        // Clear existing URL list
+        urlList.innerHTML = '';
+        
+        // Create URL items with inline buttons
+        uniqueUrls.forEach(url => {
+          const urlItem = document.createElement('div');
+          urlItem.className = 'url-item';
+          
+          const urlText = document.createElement('span');
+          urlText.className = 'url-text';
+          urlText.textContent = url;
+          
+          const urlActions = document.createElement('div');
+          urlActions.className = 'url-item-actions';
+          
+          const copyBtn = document.createElement('button');
+          copyBtn.type = 'button';
+          copyBtn.innerHTML = '<i class="fas fa-copy"></i> Copy';
+          copyBtn.onclick = () => {
+            navigator.clipboard.writeText(url).then(() => {
+              // Successfully copied
+            }).catch(() => {
+              // Copy failed silently
+            });
+          };
+          
+          const openBtn = document.createElement('button');
+          openBtn.type = 'button';
+          openBtn.innerHTML = '<i class="fas fa-external-link-alt"></i> Open';
+          openBtn.onclick = () => {
+            try {
+              window.open(url, '_blank', 'noopener,noreferrer');
+            } catch (error) {
+              // Failed to open URL silently
+            }
+          };
+          
+          urlActions.appendChild(copyBtn);
+          urlActions.appendChild(openBtn);
+          
+          urlItem.appendChild(urlText);
+          urlItem.appendChild(urlActions);
+          
+          urlList.appendChild(urlItem);
+        });
+        
+        urlSection.style.display = 'block';
       } else {
-        urlSection.style.display = "none";
+        urlList.innerHTML = '';
+        urlSection.style.display = 'none';
       }
     }
 
@@ -847,32 +947,6 @@
         input.focus();
       } catch (error) {
         // Silently fail on clipboard error
-      }
-    });
-
-    copyUrlBtn.addEventListener("click", () => {
-      const url = detectedUrl.textContent;
-      if (!url) {
-        return;
-      }
-
-      navigator.clipboard.writeText(url).then(() => {
-        // Successfully copied
-      }).catch(() => {
-        // Copy failed silently
-      });
-    });
-
-    openUrlBtn.addEventListener("click", () => {
-      const url = detectedUrl.textContent;
-      if (!url) {
-        return;
-      }
-
-      try {
-        window.open(url, "_blank", "noopener,noreferrer");
-      } catch (error) {
-        // Failed to open URL silently
       }
     });
 

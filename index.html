@@ -180,7 +180,7 @@
 
     .grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 1fr auto 1fr;
       gap: 20px;
     }
 
@@ -189,6 +189,14 @@
       display: flex;
       flex-direction: column;
       gap: 18px;
+    }
+
+    .column-middle {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 12px;
+      padding: 18px 10px;
     }
 
     .section {
@@ -270,6 +278,12 @@
 
     button:hover:not(:disabled) {
       transform: translateY(-1px);
+    }
+
+    button#clearBtn:hover {
+      background: rgba(219, 60, 60, 0.15);
+      border-color: rgba(219, 60, 60, 0.3);
+      color: #ff6b6b;
     }
 
     button:disabled {
@@ -403,6 +417,12 @@
         border-left: 0;
         border-top: 1px solid rgba(219, 247, 249, 0.08);
       }
+
+      .column-middle {
+        flex-direction: row;
+        justify-content: flex-start;
+        padding: 12px 20px;
+      }
     }
 
     @media (max-width: 640px) {
@@ -429,6 +449,16 @@
       textarea,
       pre {
         min-height: 220px;
+      }
+
+      .column-middle {
+        flex-direction: row;
+        flex-wrap: wrap;
+      }
+
+      .column-middle button {
+        flex: 1;
+        min-width: 80px;
       }
     }
   </style>
@@ -472,16 +502,16 @@
               <h2>Input</h2>
             </div>
             <textarea id="input" spellcheck="false" placeholder="Type or paste here" aria-label="Input text area"></textarea>
-            <div class="toolbar">
-              <button id="runBtn" class="primary" type="button" aria-label="Process input">Process</button>
-              <button id="clearBtn" type="button" aria-label="Clear input and output">Clear</button>
-              <button id="pasteBtn" type="button" title="Paste from clipboard">Paste</button>
-            </div>
           </div>
         </section>
 
-        <aside class="column">
+        <aside class="column column-middle">
+          <button id="runBtn" class="primary" type="button" aria-label="Process input">Process</button>
+          <button id="pasteBtn" type="button" title="Paste from clipboard">Paste</button>
+          <button id="clearBtn" type="button" aria-label="Clear input and output">Clear</button>
+        </aside>
 
+        <aside class="column">
           <div class="section">
             <div class="section-title">
               <h2>Output</h2>

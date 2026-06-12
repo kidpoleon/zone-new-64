@@ -9,6 +9,11 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
   <script src="https://raw.githubusercontent.com/nickdesaulniers/javascript-playlist-parser/master/lib/parser.min.js"></script>
+  <link rel="icon" type="image/svg+xml" href="favicon/favicon.svg">
+  <link rel="icon" type="image/png" sizes="96x96" href="favicon/favicon-96x96.png">
+  <link rel="icon" type="image/x-icon" href="favicon/favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-touch-icon.png">
+  <link rel="manifest" href="favicon/site.webmanifest">
   <style>
     :root {
       color-scheme: dark;
@@ -702,7 +707,7 @@
 
       .mode-bar {
         width: 100%;
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: repeat(4, 1fr);
       }
 
       textarea,
@@ -731,6 +736,8 @@
           <div class="mode-bar" aria-label="Mode selector">
             <button id="modeEncode" class="mode-chip" type="button">Encode</button>
             <button id="modeDecode" class="mode-chip active" type="button">Decode</button>
+            <button id="modeM3U" class="mode-chip" type="button">M3U</button>
+            <button id="modeXtream" class="mode-chip" type="button">Xtream</button>
           </div>
           <div style="position: relative;">
             <button id="hamburgerBtn" class="hamburger-btn" type="button" aria-label="Settings">
@@ -742,39 +749,12 @@
             </button>
             <div id="controlsMenu" class="controls-menu">
               <h3>Controls</h3>
-              <div class="mode-tabs">
-                <button class="mode-tab active" data-mode="base64">Base64</button>
-                <button class="mode-tab" data-mode="m3u">M3U</button>
-                <button class="mode-tab" data-mode="xtream">Xtream</button>
-              </div>
-              
-              <div class="content-section active" id="base64Section">
-                <div class="stack">
-                  <label class="toggle"><input id="bulkMode" type="checkbox" checked /><span>Bulk</span></label>
-                  <label class="toggle"><input id="dirtyScan" type="checkbox" checked /><span>Dirty scan</span></label>
-                  <label class="toggle"><input id="urlSafe" type="checkbox" checked /><span>URL-safe</span></label>
-                  <label class="toggle"><input id="stripWhitespace" type="checkbox" checked /><span>Strip whitespace</span></label>
-                  <label class="toggle"><input id="repairPadding" type="checkbox" checked /><span>Repair padding</span></label>
-                </div>
-              </div>
-
-              <div class="content-section" id="m3uSection">
-                <div class="m3u-upload">
-                  <input type="file" id="m3uFile" accept=".m3u,.m3u8">
-                  <label for="m3uFile">
-                    <i class="fas fa-upload"></i>
-                    Upload M3U Playlist
-                  </label>
-                </div>
-              </div>
-
-              <div class="content-section" id="xtreamSection">
-                <div class="xtream-login">
-                  <input type="text" id="xtreamUrl" placeholder="Server URL (e.g., http://example.com:8080)">
-                  <input type="text" id="xtreamUsername" placeholder="Username">
-                  <input type="password" id="xtreamPassword" placeholder="Password">
-                  <button id="xtreamConnect" class="primary" type="button">Connect</button>
-                </div>
+              <div class="stack">
+                <label class="toggle"><input id="bulkMode" type="checkbox" checked /><span>Bulk</span></label>
+                <label class="toggle"><input id="dirtyScan" type="checkbox" checked /><span>Dirty scan</span></label>
+                <label class="toggle"><input id="urlSafe" type="checkbox" checked /><span>URL-safe</span></label>
+                <label class="toggle"><input id="stripWhitespace" type="checkbox" checked /><span>Strip whitespace</span></label>
+                <label class="toggle"><input id="repairPadding" type="checkbox" checked /><span>Repair padding</span></label>
               </div>
             </div>
           </div>
@@ -788,6 +768,31 @@
               <h2>Input</h2>
             </div>
             <textarea id="input" spellcheck="false" placeholder="Type or paste here" aria-label="Input text area"></textarea>
+          </div>
+
+          <div class="section" id="m3uSection" style="display: none;">
+            <div class="section-title">
+              <h2>M3U Playlist</h2>
+            </div>
+            <div class="m3u-upload">
+              <input type="file" id="m3uFile" accept=".m3u,.m3u8">
+              <label for="m3uFile">
+                <i class="fas fa-upload"></i>
+                Upload M3U Playlist
+              </label>
+            </div>
+          </div>
+
+          <div class="section" id="xtreamSection" style="display: none;">
+            <div class="section-title">
+              <h2>Xtream API</h2>
+            </div>
+            <div class="xtream-login">
+              <input type="text" id="xtreamUrl" placeholder="Server URL (e.g., http://example.com:8080)">
+              <input type="text" id="xtreamUsername" placeholder="Username">
+              <input type="password" id="xtreamPassword" placeholder="Password">
+              <button id="xtreamConnect" class="primary" type="button">Connect</button>
+            </div>
           </div>
 
           <div class="section" id="playerSection" style="display: none;">
@@ -858,12 +863,12 @@
     const urlList = document.getElementById("urlList");
     
     // IPTV mode elements
-    const modeTabs = document.querySelectorAll('.mode-tab');
-    const base64Section = document.getElementById('base64Section');
-    const m3uSection = document.getElementById('m3uSection');
-    const xtreamSection = document.getElementById('xtreamSection');
+    const modeM3U = document.getElementById('modeM3U');
+    const modeXtream = document.getElementById('modeXtream');
     const inputSection = document.getElementById('inputSection');
     const outputSection = document.getElementById('outputSection');
+    const m3uSection = document.getElementById('m3uSection');
+    const xtreamSection = document.getElementById('xtreamSection');
     const playerSection = document.getElementById('playerSection');
     const channelSection = document.getElementById('channelSection');
     const m3uFile = document.getElementById('m3uFile');
@@ -889,36 +894,46 @@
     function switchAppMode(mode) {
       appMode = mode;
       
-      // Update tab styles
-      modeTabs.forEach(tab => {
-        tab.classList.toggle('active', tab.dataset.mode === mode);
-      });
-      
-      // Update content sections
-      base64Section.classList.toggle('active', mode === 'base64');
-      m3uSection.classList.toggle('active', mode === 'm3u');
-      xtreamSection.classList.toggle('active', mode === 'xtream');
+      // Update mode button styles
+      modeEncode.classList.toggle('active', mode === 'encode');
+      modeDecode.classList.toggle('active', mode === 'decode');
+      modeM3U.classList.toggle('active', mode === 'm3u');
+      modeXtream.classList.toggle('active', mode === 'xtream');
       
       // Update main sections
-      if (mode === 'base64') {
+      if (mode === 'encode' || mode === 'decode') {
         inputSection.style.display = 'flex';
         outputSection.style.display = 'flex';
+        m3uSection.style.display = 'none';
+        xtreamSection.style.display = 'none';
         playerSection.style.display = 'none';
         channelSection.style.display = 'none';
         urlSection.style.display = 'none';
-      } else {
+      } else if (mode === 'm3u') {
         inputSection.style.display = 'none';
         outputSection.style.display = 'none';
-        playerSection.style.display = 'flex';
-        channelSection.style.display = 'flex';
+        m3uSection.style.display = 'flex';
+        xtreamSection.style.display = 'none';
+        playerSection.style.display = 'none';
+        channelSection.style.display = 'none';
+        urlSection.style.display = 'none';
+      } else if (mode === 'xtream') {
+        inputSection.style.display = 'none';
+        outputSection.style.display = 'none';
+        m3uSection.style.display = 'none';
+        xtreamSection.style.display = 'flex';
+        playerSection.style.display = 'none';
+        channelSection.style.display = 'none';
         urlSection.style.display = 'none';
       }
     }
 
-    modeTabs.forEach(tab => {
-      tab.addEventListener('click', () => {
-        switchAppMode(tab.dataset.mode);
-      });
+    modeM3U.addEventListener('click', () => {
+      switchAppMode('m3u');
+    });
+
+    modeXtream.addEventListener('click', () => {
+      switchAppMode('xtream');
     });
 
     // M3U file upload handler
@@ -946,7 +961,11 @@
         }));
         
         displayChannels(channels);
-        switchAppMode('m3u');
+        
+        // Show player and channel sections
+        m3uSection.style.display = 'none';
+        playerSection.style.display = 'flex';
+        channelSection.style.display = 'flex';
       } catch (error) {
         console.error('Error parsing M3U:', error);
       }
@@ -1047,7 +1066,11 @@
         if (data.user_info && data.user_info.status === 'Active') {
           // Fetch live channels
           await fetchXtreamLiveChannels(url, username, password);
-          switchAppMode('xtream');
+          
+          // Show player and channel sections
+          xtreamSection.style.display = 'none';
+          playerSection.style.display = 'flex';
+          channelSection.style.display = 'flex';
         } else {
           alert('Authentication failed. Please check your credentials.');
         }
@@ -1153,6 +1176,8 @@
       currentMode = mode;
       modeEncode.classList.toggle("active", mode === "encode");
       modeDecode.classList.toggle("active", mode === "decode");
+      modeM3U.classList.toggle("active", mode === "m3u");
+      modeXtream.classList.toggle("active", mode === "xtream");
       if (mode !== "decode") {
         lastDecodedTexts = [];
         lastUrlList = [];

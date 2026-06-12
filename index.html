@@ -470,14 +470,12 @@
           <div class="section">
             <div class="section-title">
               <h2>Input</h2>
-              <div class="tool-row">
-                <button id="pasteBtn" type="button" title="Paste from clipboard">Paste</button>
-              </div>
             </div>
             <textarea id="input" spellcheck="false" placeholder="Type or paste here" aria-label="Input text area"></textarea>
             <div class="toolbar">
               <button id="runBtn" class="primary" type="button" aria-label="Process input">Process</button>
               <button id="clearBtn" type="button" aria-label="Clear input and output">Clear</button>
+              <button id="pasteBtn" type="button" title="Paste from clipboard">Paste</button>
             </div>
           </div>
         </section>
@@ -502,11 +500,6 @@
                 <button id="openUrlBtn" type="button">Open in New Tab</button>
               </div>
             </div>
-          </div>
-
-          <div class="section status">
-            <span id="pulse" class="pulse"></span>
-            <div id="statusText">Ready.</div>
           </div>
         </aside>
       </div>
@@ -534,8 +527,6 @@
     const urlSafe = document.getElementById("urlSafe");
     const stripWhitespace = document.getElementById("stripWhitespace");
     const repairPadding = document.getElementById("repairPadding");
-    const statusText = document.getElementById("statusText");
-    const pulse = document.getElementById("pulse");
     const urlSection = document.getElementById("urlSection");
     const detectedUrl = document.getElementById("detectedUrl");
     const copyUrlBtn = document.getElementById("copyUrlBtn");
@@ -545,20 +536,6 @@
     let lastOutputText = "";
     let lastDecodedTexts = [];
     let lastUrlList = [];
-
-    function setStatus(kind, text) {
-      statusText.textContent = text;
-      pulse.className = "pulse" + (kind ? " " + kind : "");
-      
-      // Auto-clear status after 3 seconds for success messages
-      if (kind === "good") {
-        setTimeout(() => {
-          if (statusText.textContent === text) {
-            setStatus("", "Ready.");
-          }
-        }, 3000);
-      }
-    }
 
     function checkForUrls(text) {
       const urlRegex = /https?:\/\/[^\s<>"'`]+/gi;
@@ -581,7 +558,6 @@
         lastDecodedTexts = [];
         lastUrlList = [];
       }
-      setStatus("", "Ready.");
     }
 
     function bytesToBase64(bytes) {
@@ -720,7 +696,6 @@
         output.textContent = "Nothing to encode.";
         lastOutputText = "";
         resetDerived();
-        setStatus("bad", "Input is empty. Please enter text to encode.");
         input.focus();
         return;
       }
@@ -737,12 +712,10 @@
         checkForUrls(lastOutputText);
         output.classList.add("success-flash");
         setTimeout(() => output.classList.remove("success-flash"), 300);
-        setStatus("good", `${encodedLines.length} item${encodedLines.length === 1 ? "" : "s"} encoded successfully.`);
       } catch (error) {
         output.textContent = "Encoding error: " + error.message;
         lastOutputText = "";
         resetDerived();
-        setStatus("bad", "Encoding failed. Please check your input.");
       }
     }
 
@@ -752,7 +725,6 @@
         output.textContent = "Nothing to decode.";
         lastOutputText = "";
         resetDerived();
-        setStatus("bad", "Input is empty. Please enter Base64 text to decode.");
         input.focus();
         return;
       }
@@ -769,7 +741,6 @@
             output.classList.add("success-flash");
             setTimeout(() => output.classList.remove("success-flash"), 300);
           }
-          setStatus(decodedTexts.length ? "good" : "bad", decodedTexts.length ? `${decodedTexts.length} candidate${decodedTexts.length === 1 ? "" : "s"} decoded successfully.` : "No valid Base64 found. Try adjusting settings.");
           return;
         }
 
@@ -800,12 +771,10 @@
           output.classList.add("success-flash");
           setTimeout(() => output.classList.remove("success-flash"), 300);
         }
-        setStatus(decodedTexts.length ? "good" : "bad", `${decodedTexts.length} of ${lines.length} item${lines.length === 1 ? "" : "s"} decoded successfully.`);
       } catch (error) {
         output.textContent = "Decoding error: " + error.message;
         lastOutputText = "";
         resetDerived();
-        setStatus("bad", "Decoding failed. Please check your Base64 input.");
       }
     }
 
@@ -838,7 +807,6 @@
       lastOutputText = "";
       resetDerived();
       urlSection.style.display = "none";
-      setStatus("", "Cleared. Ready.");
       input.focus();
     });
 
@@ -846,39 +814,35 @@
       try {
         const text = await navigator.clipboard.readText();
         input.value = text;
-        setStatus("good", "Pasted from clipboard.");
         input.focus();
       } catch (error) {
-        setStatus("bad", "Failed to paste. Please use Ctrl+V.");
+        // Silently fail on clipboard error
       }
     });
 
     copyUrlBtn.addEventListener("click", () => {
       const url = detectedUrl.textContent;
       if (!url) {
-        setStatus("bad", "No URL to copy.");
         return;
       }
 
       navigator.clipboard.writeText(url).then(() => {
-        setStatus("good", "URL copied to clipboard.");
+        // Successfully copied
       }).catch(() => {
-        setStatus("bad", "Copy failed. Please try again.");
+        // Copy failed silently
       });
     });
 
     openUrlBtn.addEventListener("click", () => {
       const url = detectedUrl.textContent;
       if (!url) {
-        setStatus("bad", "No URL to open.");
         return;
       }
 
       try {
         window.open(url, "_blank", "noopener,noreferrer");
-        setStatus("good", "Opening URL in new tab.");
       } catch (error) {
-        setStatus("bad", "Failed to open URL.");
+        // Failed to open URL silently
       }
     });
 

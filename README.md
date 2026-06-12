@@ -2,28 +2,33 @@
 
 A modern, web-based Base64 encoder/decoder with advanced features and a sleek dark theme.
 
-## Features
+## Screenshots
 
-- **Encode/Decode Modes**: Switch between encoding and decoding Base64 strings
-- **Bulk Processing**: Process multiple lines at once
-- **Dirty Scan**: Automatically detect and extract Base64 strings from mixed content
-- **URL-Safe Mode**: Support for URL-safe Base64 variants (using `-` and `_` instead of `+` and `/`)
-- **Whitespace Stripping**: Automatically remove whitespace from input
-- **Padding Repair**: Automatically fix missing padding characters
-- **URL Detection**: Automatically detects URLs in decoded output with quick copy and open actions
-- **Responsive Design**: Works seamlessly on desktop and mobile devices
-- **Dark Theme**: Easy on the eyes with a modern, professional aesthetic
+![Screenshot](favicon/screenshot.png)
 
-## Usage
+![Guide](favicon/guide.gif)
+
+## Quick Start
 
 1. Open the web application
-2. Select either "Encode" or "Decode" mode
+2. Select "Encode" or "Decode" mode
 3. Paste your text into the input field
-4. Adjust settings using the hamburger menu (☰) if needed
-5. Click "Process" to encode or decode
-6. Copy the result or use the detected URL features
+4. Click "Process" to encode or decode
+5. Copy the result or use detected URL features
 
-### Controls
+## Features
+
+- **Encode/Decode**: Switch between encoding and decoding Base64 strings
+- **Bulk Processing**: Process multiple lines at once
+- **Dirty Scan**: Automatically detect and extract Base64 from mixed content
+- **URL-Safe Mode**: Use URL-safe Base64 variants (`-` and `_` instead of `+` and `/`)
+- **Whitespace Stripping**: Remove all whitespace from input
+- **Padding Repair**: Automatically fix missing padding characters
+- **URL Detection**: Detect URLs in decoded output with quick copy/open actions
+- **Responsive Design**: Works on desktop and mobile devices
+- **Dark Theme**: Easy on the eyes with a modern aesthetic
+
+## Controls (☰ Menu)
 
 - **Bulk**: Process multiple lines separately
 - **Dirty scan**: Extract Base64 strings from mixed content
@@ -31,12 +36,17 @@ A modern, web-based Base64 encoder/decoder with advanced features and a sleek da
 - **Strip whitespace**: Remove all whitespace from input
 - **Repair padding**: Automatically fix missing padding
 
-## Deployment
+## Keyboard Shortcuts
 
-This project is deployed on GitHub Pages and automatically updates on push to the master branch.
+- **Ctrl+V**: Paste text
+- **Ctrl+L**: Clear input and output
+- **Enter**: Process (when focused on input)
+
+## Links
 
 - **Live Site**: https://kidpoleon.github.io/zone-new-64/
 - **Repository**: https://github.com/kidpoleon/zone-new-64
+- **Community**: https://www.reddit.com/r/IPTV_ZONENEW/
 
 ## Technology
 
@@ -47,8 +57,4 @@ This project is deployed on GitHub Pages and automatically updates on push to th
 
 ## License
 
-This project is open source and available under the MIT License.
-
-## Community
-
-Join the discussion at r/IPTV_ZONENEW: https://www.reddit.com/r/IPTV_ZONENEW/
+MIT License

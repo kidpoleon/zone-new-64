@@ -7,8 +7,6 @@
   <link rel="preconnect" href="https://rsms.me/" />
   <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
-  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-  <script src="https://raw.githubusercontent.com/nickdesaulniers/javascript-playlist-parser/master/lib/parser.min.js"></script>
   <link rel="icon" type="image/svg+xml" href="favicon/favicon.svg">
   <link rel="icon" type="image/png" sizes="96x96" href="favicon/favicon-96x96.png">
   <link rel="icon" type="image/x-icon" href="favicon/favicon.ico">
@@ -434,205 +432,6 @@
       }
     }
 
-    .mode-tabs {
-      display: flex;
-      gap: 4px;
-      background: rgba(219, 247, 249, 0.04);
-      padding: 4px;
-      border-radius: 8px;
-      margin-bottom: 12px;
-    }
-
-    .mode-tab {
-      flex: 1;
-      padding: 8px 12px;
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--muted);
-      background: transparent;
-      border: 1px solid transparent;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: all 140ms ease;
-    }
-
-    .mode-tab:hover {
-      color: var(--text);
-      background: rgba(219, 247, 249, 0.06);
-    }
-
-    .mode-tab.active {
-      color: var(--text);
-      background: var(--accent);
-      border-color: rgba(31, 165, 223, 0.45);
-    }
-
-    .xtream-login {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      padding: 16px;
-      background: rgba(219, 247, 249, 0.04);
-      border: 1px solid rgba(219, 247, 249, 0.08);
-      border-radius: 8px;
-    }
-
-    .xtream-login input {
-      padding: 10px 12px;
-      font-size: 14px;
-      color: var(--text);
-      background: rgba(219, 247, 249, 0.06);
-      border: 1px solid rgba(219, 247, 249, 0.12);
-      border-radius: 6px;
-      outline: none;
-      transition: border-color 140ms ease, background 140ms ease;
-    }
-
-    .xtream-login input:focus {
-      border-color: var(--accent);
-      background: rgba(219, 247, 249, 0.08);
-    }
-
-    .xtream-login input::placeholder {
-      color: var(--muted);
-    }
-
-    .video-player {
-      width: 100%;
-      aspect-ratio: 16/9;
-      background: #000;
-      border-radius: 8px;
-      overflow: hidden;
-    }
-
-    .video-player video {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-    }
-
-    .channel-list {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      max-height: 400px;
-      overflow-y: auto;
-    }
-
-    .channel-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 10px 12px;
-      background: rgba(219, 247, 249, 0.04);
-      border: 1px solid rgba(219, 247, 249, 0.08);
-      border-radius: 6px;
-      cursor: pointer;
-      transition: all 140ms ease;
-    }
-
-    .channel-item:hover {
-      background: rgba(219, 247, 249, 0.08);
-      border-color: rgba(219, 247, 249, 0.12);
-    }
-
-    .channel-item.active {
-      background: rgba(31, 165, 223, 0.15);
-      border-color: rgba(31, 165, 223, 0.3);
-    }
-
-    .channel-logo {
-      width: 40px;
-      height: 40px;
-      border-radius: 4px;
-      object-fit: contain;
-      background: rgba(219, 247, 249, 0.06);
-    }
-
-    .channel-info {
-      flex: 1;
-      min-width: 0;
-    }
-
-    .channel-name {
-      font-size: 14px;
-      font-weight: 500;
-      color: var(--text);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .channel-group {
-      font-size: 12px;
-      color: var(--muted);
-      margin-top: 2px;
-    }
-
-    .channel-search {
-      padding: 10px 12px;
-      font-size: 14px;
-      color: var(--text);
-      background: rgba(219, 247, 249, 0.06);
-      border: 1px solid rgba(219, 247, 249, 0.12);
-      border-radius: 6px;
-      outline: none;
-      margin-bottom: 12px;
-      width: 100%;
-    }
-
-    .channel-search:focus {
-      border-color: var(--accent);
-      background: rgba(219, 247, 249, 0.08);
-    }
-
-    .channel-search::placeholder {
-      color: var(--muted);
-    }
-
-    .m3u-upload {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      padding: 16px;
-      background: rgba(219, 247, 249, 0.04);
-      border: 1px solid rgba(219, 247, 249, 0.08);
-      border-radius: 8px;
-    }
-
-    .m3u-upload input[type="file"] {
-      display: none;
-    }
-
-    .m3u-upload label {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      padding: 12px;
-      font-size: 14px;
-      font-weight: 500;
-      color: var(--text);
-      background: rgba(219, 247, 249, 0.06);
-      border: 1px dashed rgba(219, 247, 249, 0.3);
-      border-radius: 6px;
-      cursor: pointer;
-      transition: all 140ms ease;
-    }
-
-    .m3u-upload label:hover {
-      background: rgba(219, 247, 249, 0.1);
-      border-color: var(--accent);
-    }
-
-    .content-section {
-      display: none;
-    }
-
-    .content-section.active {
-      display: block;
-    }
-
     .loading {
       opacity: 0.6;
       pointer-events: none;
@@ -707,7 +506,7 @@
 
       .mode-bar {
         width: 100%;
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: 1fr 1fr;
       }
 
       textarea,
@@ -736,8 +535,6 @@
           <div class="mode-bar" aria-label="Mode selector">
             <button id="modeEncode" class="mode-chip" type="button">Encode</button>
             <button id="modeDecode" class="mode-chip active" type="button">Decode</button>
-            <button id="modeM3U" class="mode-chip" type="button">M3U</button>
-            <button id="modeXtream" class="mode-chip" type="button">Xtream</button>
           </div>
           <div style="position: relative;">
             <button id="hamburgerBtn" class="hamburger-btn" type="button" aria-label="Settings">
@@ -763,45 +560,11 @@
 
       <div class="grid">
         <section class="column">
-          <div class="section" id="inputSection">
+          <div class="section">
             <div class="section-title">
               <h2>Input</h2>
             </div>
             <textarea id="input" spellcheck="false" placeholder="Type or paste here" aria-label="Input text area"></textarea>
-          </div>
-
-          <div class="section" id="m3uSection" style="display: none;">
-            <div class="section-title">
-              <h2>M3U Playlist</h2>
-            </div>
-            <div class="m3u-upload">
-              <input type="file" id="m3uFile" accept=".m3u,.m3u8">
-              <label for="m3uFile">
-                <i class="fas fa-upload"></i>
-                Upload M3U Playlist
-              </label>
-            </div>
-          </div>
-
-          <div class="section" id="xtreamSection" style="display: none;">
-            <div class="section-title">
-              <h2>Xtream API</h2>
-            </div>
-            <div class="xtream-login">
-              <input type="text" id="xtreamUrl" placeholder="Server URL (e.g., http://example.com:8080)">
-              <input type="text" id="xtreamUsername" placeholder="Username">
-              <input type="password" id="xtreamPassword" placeholder="Password">
-              <button id="xtreamConnect" class="primary" type="button">Connect</button>
-            </div>
-          </div>
-
-          <div class="section" id="playerSection" style="display: none;">
-            <div class="section-title">
-              <h2>Player</h2>
-            </div>
-            <div class="video-player">
-              <video id="videoPlayer" controls></video>
-            </div>
           </div>
         </section>
 
@@ -812,19 +575,11 @@
         </aside>
 
         <aside class="column">
-          <div class="section" id="outputSection">
+          <div class="section">
             <div class="section-title">
               <h2>Output</h2>
             </div>
             <pre id="output" aria-label="Output text area">Ready.</pre>
-          </div>
-
-          <div class="section" id="channelSection" style="display: none;">
-            <div class="section-title">
-              <h2>Channels</h2>
-            </div>
-            <input type="text" id="channelSearch" class="channel-search" placeholder="Search channels...">
-            <div id="channelList" class="channel-list"></div>
           </div>
 
           <div class="section" id="urlSection" style="display: none;">
@@ -861,253 +616,11 @@
     const repairPadding = document.getElementById("repairPadding");
     const urlSection = document.getElementById("urlSection");
     const urlList = document.getElementById("urlList");
-    
-    // IPTV mode elements
-    const modeM3U = document.getElementById('modeM3U');
-    const modeXtream = document.getElementById('modeXtream');
-    const inputSection = document.getElementById('inputSection');
-    const outputSection = document.getElementById('outputSection');
-    const m3uSection = document.getElementById('m3uSection');
-    const xtreamSection = document.getElementById('xtreamSection');
-    const playerSection = document.getElementById('playerSection');
-    const channelSection = document.getElementById('channelSection');
-    const m3uFile = document.getElementById('m3uFile');
-    const xtreamUrl = document.getElementById('xtreamUrl');
-    const xtreamUsername = document.getElementById('xtreamUsername');
-    const xtreamPassword = document.getElementById('xtreamPassword');
-    const xtreamConnect = document.getElementById('xtreamConnect');
-    const videoPlayer = document.getElementById('videoPlayer');
-    const channelList = document.getElementById('channelList');
-    const channelSearch = document.getElementById('channelSearch');
 
     let currentMode = "encode";
     let lastOutputText = "";
     let lastDecodedTexts = [];
     let lastUrlList = [];
-    
-    // IPTV state
-    let appMode = "base64"; // base64, m3u, xtream
-    let channels = [];
-    let currentChannel = null;
-    let hls = null;
-
-    function switchAppMode(mode) {
-      appMode = mode;
-      
-      // Update mode button styles
-      modeEncode.classList.toggle('active', mode === 'encode');
-      modeDecode.classList.toggle('active', mode === 'decode');
-      modeM3U.classList.toggle('active', mode === 'm3u');
-      modeXtream.classList.toggle('active', mode === 'xtream');
-      
-      // Update main sections
-      if (mode === 'encode' || mode === 'decode') {
-        inputSection.style.display = 'flex';
-        outputSection.style.display = 'flex';
-        m3uSection.style.display = 'none';
-        xtreamSection.style.display = 'none';
-        playerSection.style.display = 'none';
-        channelSection.style.display = 'none';
-        urlSection.style.display = 'none';
-      } else if (mode === 'm3u') {
-        inputSection.style.display = 'none';
-        outputSection.style.display = 'none';
-        m3uSection.style.display = 'flex';
-        xtreamSection.style.display = 'none';
-        playerSection.style.display = 'none';
-        channelSection.style.display = 'none';
-        urlSection.style.display = 'none';
-      } else if (mode === 'xtream') {
-        inputSection.style.display = 'none';
-        outputSection.style.display = 'none';
-        m3uSection.style.display = 'none';
-        xtreamSection.style.display = 'flex';
-        playerSection.style.display = 'none';
-        channelSection.style.display = 'none';
-        urlSection.style.display = 'none';
-      }
-    }
-
-    modeM3U.addEventListener('click', () => {
-      switchAppMode('m3u');
-    });
-
-    modeXtream.addEventListener('click', () => {
-      switchAppMode('xtream');
-    });
-
-    // M3U file upload handler
-    m3uFile.addEventListener('change', (event) => {
-      const file = event.target.files[0];
-      if (!file) return;
-
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const content = e.target.result;
-        parseM3U(content);
-      };
-      reader.readAsText(file);
-    });
-
-    function parseM3U(content) {
-      try {
-        const playlist = M3U.parse(content);
-        channels = playlist.map((item, index) => ({
-          id: index,
-          name: item.title || `Channel ${index + 1}`,
-          url: item.file,
-          logo: item.logo || null,
-          group: item.group || 'Uncategorized'
-        }));
-        
-        displayChannels(channels);
-        
-        // Show player and channel sections
-        m3uSection.style.display = 'none';
-        playerSection.style.display = 'flex';
-        channelSection.style.display = 'flex';
-      } catch (error) {
-        console.error('Error parsing M3U:', error);
-      }
-    }
-
-    function displayChannels(channelData) {
-      channelList.innerHTML = '';
-      
-      channelData.forEach(channel => {
-        const channelItem = document.createElement('div');
-        channelItem.className = 'channel-item';
-        channelItem.dataset.id = channel.id;
-        
-        const logo = document.createElement('img');
-        logo.className = 'channel-logo';
-        logo.src = channel.logo || 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><rect fill="%23219,247,249,0.06" width="40" height="40"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="%23b8d4d6" font-size="12">TV</text></svg>';
-        logo.alt = channel.name;
-        
-        const info = document.createElement('div');
-        info.className = 'channel-info';
-        
-        const name = document.createElement('div');
-        name.className = 'channel-name';
-        name.textContent = channel.name;
-        
-        const group = document.createElement('div');
-        group.className = 'channel-group';
-        group.textContent = channel.group;
-        
-        info.appendChild(name);
-        info.appendChild(group);
-        
-        channelItem.appendChild(logo);
-        channelItem.appendChild(info);
-        
-        channelItem.addEventListener('click', () => {
-          playChannel(channel);
-        });
-        
-        channelList.appendChild(channelItem);
-      });
-    }
-
-    function playChannel(channel) {
-      currentChannel = channel;
-      
-      // Update active state
-      document.querySelectorAll('.channel-item').forEach(item => {
-        item.classList.toggle('active', parseInt(item.dataset.id) === channel.id);
-      });
-      
-      // Play stream
-      if (Hls.isSupported() && channel.url.includes('.m3u8')) {
-        if (hls) {
-          hls.destroy();
-        }
-        hls = new Hls();
-        hls.loadSource(channel.url);
-        hls.attachMedia(videoPlayer);
-        hls.on(Hls.Events.MANIFEST_PARSED, () => {
-          videoPlayer.play();
-        });
-      } else if (videoPlayer.canPlayType('application/vnd.apple.mpegurl')) {
-        videoPlayer.src = channel.url;
-        videoPlayer.play();
-      } else {
-        videoPlayer.src = channel.url;
-        videoPlayer.play();
-      }
-    }
-
-    // Channel search
-    channelSearch.addEventListener('input', (e) => {
-      const searchTerm = e.target.value.toLowerCase();
-      const filtered = channels.filter(channel => 
-        channel.name.toLowerCase().includes(searchTerm) ||
-        channel.group.toLowerCase().includes(searchTerm)
-      );
-      displayChannels(filtered);
-    });
-
-    // Xtream API integration
-    xtreamConnect.addEventListener('click', async () => {
-      const url = xtreamUrl.value.trim();
-      const username = xtreamUsername.value.trim();
-      const password = xtreamPassword.value.trim();
-      
-      if (!url || !username || !password) {
-        alert('Please fill in all fields');
-        return;
-      }
-      
-      try {
-        const apiUrl = `${url}/player_api.php?username=${username}&password=${password}`;
-        const response = await fetch(apiUrl);
-        const data = await response.json();
-        
-        if (data.user_info && data.user_info.status === 'Active') {
-          // Fetch live channels
-          await fetchXtreamLiveChannels(url, username, password);
-          
-          // Show player and channel sections
-          xtreamSection.style.display = 'none';
-          playerSection.style.display = 'flex';
-          channelSection.style.display = 'flex';
-        } else {
-          alert('Authentication failed. Please check your credentials.');
-        }
-      } catch (error) {
-        console.error('Xtream API error:', error);
-        alert('Failed to connect to Xtream server. Please check your URL and try again.');
-      }
-    });
-
-    async function fetchXtreamLiveChannels(url, username, password) {
-      try {
-        const response = await fetch(`${url}/player_api.php?username=${username}&password=${password}&action=get_live_categories`);
-        const categories = await response.json();
-        
-        const channelsData = [];
-        
-        for (const category of categories) {
-          const categoryResponse = await fetch(`${url}/player_api.php?username=${username}&password=${password}&action=get_live_streams&category_id=${category.category_id}`);
-          const categoryChannels = await categoryResponse.json();
-          
-          categoryChannels.forEach((channel, index) => {
-            channelsData.push({
-              id: channel.stream_id,
-              name: channel.name,
-              url: `${url}/live/${username}/${password}/${channel.stream_id}.m3u8`,
-              logo: channel.stream_icon || null,
-              group: category.category_name
-            });
-          });
-        }
-        
-        channels = channelsData;
-        displayChannels(channels);
-      } catch (error) {
-        console.error('Error fetching Xtream channels:', error);
-      }
-    }
 
     function checkForUrls(text) {
       const urlRegex = /https?:\/\/[^\s<>"'`]+/gi;
@@ -1176,8 +689,6 @@
       currentMode = mode;
       modeEncode.classList.toggle("active", mode === "encode");
       modeDecode.classList.toggle("active", mode === "decode");
-      modeM3U.classList.toggle("active", mode === "m3u");
-      modeXtream.classList.toggle("active", mode === "xtream");
       if (mode !== "decode") {
         lastDecodedTexts = [];
         lastUrlList = [];
